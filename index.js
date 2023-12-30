@@ -1,12 +1,14 @@
 const WebsocketProvider = require("web3-providers-ws");
 const ABI = require("./abi.json");
 const ethers = require("ethers");
+require("dotenv").config();
+const { Web3Provider } = require("@ethersproject/providers");
 
 const run = async () => {
   console.log("Listening...");
 
   const provider = new Web3Provider(
-    new WebsocketProvider("wss://mainnet.infura.io/ws", {
+    new WebsocketProvider(process.env.RPC, {
       timeout: 300,
       clientConfig: {
         keepalive: true,
@@ -22,7 +24,7 @@ const run = async () => {
   );
 
   const contract = new ethers.Contract(
-    "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+    process.env.CONTRACT_ADDRESS,
     ABI,
     provider
   );
@@ -30,7 +32,6 @@ const run = async () => {
   contract.on("*", async (event) => {
     if (event.event == "Transfer") {
       console.log(event);
-      const { from, to } = event.args;
       // Do something
     }
   });
